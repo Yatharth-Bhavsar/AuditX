@@ -1,0 +1,24 @@
+[
+    {
+        "id": "PCI-REQ3",
+        "section": "PCI-DSS v4.0 Requirement 3",
+        "title": "Protect Stored Account Data",
+        "description": "Primary Account Numbers (PAN) must be rendered unreadable using strong cryptography, tokenization, or truncation wherever stored.",
+        "triggers": [
+            "pan_plain_storage",
+            "card_number_varchar",
+            "unencrypted_card_fields"
+        ]
+    },
+    {
+        "id": "PCI-REQ6",
+        "section": "PCI-DSS v4.0 Requirement 6",
+        "title": "Develop and Maintain Secure Systems",
+        "description": "All system components must be protected from known vulnerabilities. SQL injection and injection flaws in payment flows must be remediated.",
+        "triggers": [
+            "sql_injection_risk",
+            "unparameterized_query",
+            "no_input_validation"
+        ]
+    }
+]

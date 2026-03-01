@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuditX Compliance Report</title>
+    <style>
+        :root {
+            --critical: #dc2626;
+            --high: #ea580c;
+            --medium: #ca8a04;
+            --low: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        header {
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+        .logo-text {
+            color: #4f46e5;
+        }
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+        .meta-item {
+            font-size: 0.875rem;
+        }
+        .meta-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        .summary-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .badge.critical { background: var(--critical); }
+        .badge.high { background: var(--high); }
+        .badge.medium { background: var(--medium); }
+        .badge.low { background: var(--low); }
+        
+        .effort-box {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-left: auto;
+            border: 1px solid var(--border);
+        }
+
+        .finding-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            page-break-inside: avoid;
+        }
+        .finding-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+        .finding-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .location-hint {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        .finding-body h4 {
+            margin: 1rem 0 0.5rem 0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .finding-body p {
+            margin: 0 0 1rem 0;
+        }
+        .legal-obligation {
+            background: #fff8f1;
+            border-left: 4px solid var(--high);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .remediation {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        .disclaimer {
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto 1rem auto;
+        }
+        
+        @media print {
+            body { background: white; }
+            .container { padding: 0; }
+            .finding-card { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="logo-text">AuditX</span> Compliance Report</h1>
+        </header>
+
+        <div class="metadata">
+            <div class="meta-item">
+                <div class="meta-label">Target Directory</div>
+                <div>{{ metadata.directory }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Profile</div>
+                <div>{{ metadata.profile | upper }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Files Analyzed</div>
+                <div>{{ metadata.files_count }} files</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Scan Date</div>
+                <div>{{ metadata.timestamp }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Duration</div>
+                <div>{{ metadata.duration }}s</div>
+            </div>
+        </div>
+
+        <div class="summary-bar">
+            <div class="badge critical">{{ summary.critical }} CRITICAL</div>
+            <div class="badge high">{{ summary.high }} HIGH</div>
+            <div class="badge medium">{{ summary.medium }} MEDIUM</div>
+            <div class="badge low">{{ summary.low }} LOW</div>
+            
+            <div class="effort-box">
+                Estimated Remediation: {{ metadata.effort_days }}
+            </div>
+        </div>
+
+        <div class="findings-list">
+            {% if findings|length == 0 %}
+            <div class="finding-card">
+                <h3>No findings detected or Analysis Unavailable</h3>
+                <p>Ensure API key is valid and target codebase is correctly specified.</p>
+            </div>
+            {% endif %}
+
+            {% for finding in findings %}
+            <div class="finding-card">
+                <div class="finding-header">
+                    <span class="badge {{ finding.severity | lower }}">{{ finding.severity }}</span>
+                    <h3 class="finding-title">{{ finding.regulation_reference }} — {{ finding.regulation_title }}</h3>
+                </div>
+                
+                <div class="finding-body">
+                    <h4>Location Observed</h4>
+                    <span class="location-hint">{{ finding.location_hint }}</span>
+                    
+                    <h4>Behavior Observed</h4>
+                    <p>{{ finding.behavior_observed }}</p>
+                    
+                    {% if finding.legal_obligation %}
+                    <div class="legal-obligation">
+                        <strong>Legal Obligation:</strong><br>
+                        {{ finding.legal_obligation }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="remediation">
+                        <strong>Recommended Remediation:</strong><br>
+                        {{ finding.remediation }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <footer>
+            <p class="disclaimer">
+                This report is generated by an AI system (AuditX {{ metadata.version }}) and
+                constitutes a preliminary compliance gap assessment only.
+                It does not replace a legal compliance audit or professional
+                VAPT engagement. All findings should be reviewed by a qualified
+                compliance officer before action.
+            </p>
+            <p>Generated on {{ metadata.timestamp }} by AuditX Scanner</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "DPDP-4",
+    "section": "Section 4",
+    "title": "Lawful Processing of Personal Data",
+    "description": "Personal data may only be processed for a lawful purpose for which the data principal has given consent or which is specified in law.",
+    "triggers": ["unnecessary_fields", "no_purpose_documented"]
+  },
+  {
+    "id": "DPDP-8-3",
+    "section": "Section 8(3)",
+    "title": "Data Minimization",
+    "description": "A data fiduciary shall collect only such personal data that is necessary for the specified purpose.",
+    "triggers": ["excess_pii_collection", "unused_fields"]
+  },
+  {
+    "id": "DPDP-8-7",
+    "section": "Section 8(7)",
+    "title": "Data Erasure / Retention",
+    "description": "Personal data must be erased once the purpose for which it was collected is fulfilled.",
+    "triggers": ["no_retention_policy", "indefinite_storage"]
+  },
+  {
+    "id": "DPDP-9",
+    "section": "Section 9",
+    "title": "Processing Children's Data",
+    "description": "Verifiable parental consent required before processing personal data of children under 18.",
+    "triggers": ["no_age_verification", "minors_reachable"]
+  },
+  {
+    "id": "DPDP-12",
+    "section": "Section 12",
+    "title": "Breach Notification",
+    "description": "Mandatory notification to the Data Protection Board and affected data principals in the event of a breach.",
+    "triggers": ["no_breach_logging", "no_alerting"]
+  }
+]

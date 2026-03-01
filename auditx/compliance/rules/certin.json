@@ -1,0 +1,22 @@
+[
+    {
+        "id": "CERTIN-2022-LOG",
+        "section": "CERT-In Directions 2022 — Clause 4",
+        "title": "Mandatory Log Retention",
+        "description": "ICT infrastructure logs must be maintained securely for a rolling 180-day period and must be available for audit upon request.",
+        "triggers": [
+            "no_logging",
+            "insufficient_log_retention"
+        ]
+    },
+    {
+        "id": "CERTIN-2022-REPORT",
+        "section": "CERT-In Directions 2022 — Clause 3",
+        "title": "6-Hour Incident Reporting Obligation",
+        "description": "Cybersecurity incidents must be reported to CERT-In within 6 hours of detection. Detection infrastructure is a prerequisite.",
+        "triggers": [
+            "no_breach_detection",
+            "no_alerting_system"
+        ]
+    }
+]

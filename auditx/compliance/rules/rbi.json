@@ -1,0 +1,23 @@
+[
+    {
+        "id": "RBI-TOKEN-2022",
+        "section": "RBI Circular RBI/2021-22/173",
+        "title": "Card Tokenization — Data Storage Prohibition",
+        "description": "No entity in the payment chain, other than the card networks and issuing banks, may store actual card data after transaction processing.",
+        "triggers": [
+            "card_data_stored",
+            "pan_in_database",
+            "cvv_retained"
+        ]
+    },
+    {
+        "id": "RBI-KYC-2016",
+        "section": "RBI Master Direction on KYC",
+        "title": "Customer Due Diligence — Data Minimization",
+        "description": "KYC data collected must be strictly limited to what is required for the risk category of the customer.",
+        "triggers": [
+            "excess_kyc_fields",
+            "unverified_kyc_storage"
+        ]
+    }
+]
