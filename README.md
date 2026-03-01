@@ -25,7 +25,9 @@ auditx scan ./demo_repo --profile fintech
 ```
 
 ## Demo
-*(Placeholder for Loom video link demonstrating the AuditX CLI and resulting HTML report)*
+<img width="844" height="863" alt="image" src="https://github.com/user-attachments/assets/27c2e202-b755-447e-8d42-36af75baec00" />
+<img width="1200" height="899" alt="image" src="https://github.com/user-attachments/assets/2f148c94-6db2-44d5-97eb-205bbffd1de2" />
+
 
 ## Compliance Profiles
 - **`fintech`**: Comprehensive scan covering DPDP + RBI + PCI-DSS + CERT-In.
