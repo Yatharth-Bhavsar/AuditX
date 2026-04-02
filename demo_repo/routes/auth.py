@@ -46,8 +46,8 @@ def login():
     # SQL query without parameterization.
     conn = get_db()
     try:
-        query = f"SELECT * FROM users WHERE email='{email}'"
-        user = conn.execute(query).fetchone()
+        query = "SELECT * FROM users WHERE email=?"
+        user = conn.execute(query, (email,)).fetchone()
         
         if user and user['password'] == password:
             return jsonify({"token": "fake-jwt-token"}), 200

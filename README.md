@@ -1,37 +1,45 @@
-# AuditX 🛡️
+# AuditX 🛡️ (v2.0)
 ### AI Compliance Gap Scanner for Indian Startups
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Gemini API](https://img.shields.io/badge/Gemini-2.5_Flash-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen.svg)
 
 **AuditX** is a powerful, local-first Python CLI tool that analyzes a startup's backend codebase to identify compliance gaps. It maps vulnerabilities directly to crucial Indian regulatory frameworks, generating action-oriented, standalone HTML reports.
 
+**Version 2.0** introduces a rich interactive CLI, automated VAPT (Vulnerability Assessment and Penetration Testing) with OWASP Top 10 enrichment, dependency CVE scanning, and the ability to upload **custom policy documents (PDF)** for cross-verification against your codebase!
+
 ---
 
-## ✨ Features
+## ✨ Features (New in v2)
 
 - **Local-First AST Parsing**: Uses `tree-sitter` to parse your backend code locally. **Raw source code is never sent to the cloud.**
-- **AI-Powered Analysis**: Leverages the **Google Gemini 2.5 Flash** model for intelligent compliance reasoning based strictly on the extracted AST metadata.
+- **AI-Powered Analysis**: Leverages the **Google Gemini 2.5 Flash** model for intelligent compliance reasoning.
+- **Automated VAPT & Taint Analysis**: Now checks for weak cryptography, missing bounds, and cross-site scripting flaws using AST taint analysis.
+- **Dependency CVE Scanning**: Flags vulnerable upstream packages in your requirements/package-lock.
+- **Interactive Console**: Run `auditx start` for a guided, terminal UI experience with animations and spinners.
+- **Custom Policy Assessment**: Upload any corporate security framework or ISO/SOC2 standard PDF; AuditX will extract AI controls and score your codebase against *your own rules*.
 - **Regulatory Mapping**: Automatically maps code behaviors to explicit clauses in:
-  - 🇮🇳 **DPDP Act 2023** (Data Minimization, Breach Notification, Children's Data)
-  - 🏦 **RBI Guidelines** (Card Tokenization, KYC Minimization)
-  - 💳 **PCI-DSS v4.0** (Account Data Protection, Secure System Development)
-  - 🛡️ **CERT-In Directions 2022** (Log Retention, Incident Reporting)
-- **Beautiful HTML Reports**: Generates a self-contained, printable HTML report summarizing severities, exact code locations, legal obligations, and actionable remediation steps.
+  - 🇮🇳 **DPDP Act 2023** 
+  - 🏦 **RBI Guidelines** 
+  - 💳 **PCI-DSS v4.0** 
+  - 🛡️ **CERT-In Directions 2022** 
+- **Beautiful HTML Reports**: Generates printable HTML reports with risk scores, missing controls, and exact code locations.
 
 ---
 
-## 🏗️ How it Works (Architecture)
+## 🏗️ Architecture
 
 ```mermaid
 graph TD;
-    A[Target Codebase] -->|AST Parser| B(Local Feature Extraction);
-    B -->|Routes, DB Models, Auth Patterns| C{CodebaseSummary JSON};
-    C -->|Sanitized Metadata Payload| D((Gemini 2.5 Flash API));
-    D -->|Raw JSON Findings| E[Ruleset Matching Engine];
-    E -->|Enriched Citations| F[Jinja2 HTML Builder];
-    F --> G[Standalone Report HTML];
+    A[Target Codebase] -->|AST Parser & Taint Analysis| B(Local Feature Extraction);
+    B -->|Routes, DB Models, Taint paths| C{CodebaseSummary JSON};
+    P[Custom Policy PDF] -->|Text Extraction| D((Gemini 2.5 API));
+    C -->|Sanitized Metadata| D;
+    D -->|Match Rules & Controls| E[Ruleset Evaluation Setup];
+    E -->|Combine with CVE & Static| F[Jinja2 HTML Builder];
+    F --> G[Standalone V2 HTML Report];
 ```
 
 ---
@@ -61,16 +69,72 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ### 3. Usage
 
-Run your first scan against the included demo repository:
+**Interactive Mode (Recommended)**
+AuditX now comes with a rich terminal UI! Let the assistant guide you through the audit process.
+```bash
+auditx start
+```
 
+**Headless CLI scan**
+Run a scan against the included demo repository:
 ```bash
 auditx scan ./demo_repo --profile fintech
 ```
 
+**Custom Policy Scanning**
+If your company has custom security guidelines, you can scan against them! Provide the path to a PDF Document:
+```bash
+auditx scan ./demo_repo --profile saas --custom-policy ./corporate_policy.pdf
+```
+
 > **Note for Windows users**: If the `auditx` command is not recognized due to PATH issues, you can run the tool as a Python module:
-> ```bash
-> python -m auditx scan ./demo_repo --profile fintech
-> ```
+> `python -m auditx start`
+
+---
+
+## ☁️ How to Deploy & Self-Host
+
+You can integrate AuditX into your existing workflows, such as CI/CD pipelines, giving developers instant feedback on PRs.
+
+### CI/CD Integration (GitHub Actions Example)
+AuditX operates entirely as a local package, requiring only the Gemini API. You can run it effortlessly on GitHub Actions:
+
+```yaml
+name: AuditX Compliance Scan
+on: [pull_request]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install AuditX
+        run: |
+          git clone https://github.com/Yatharth-Bhavsar/AuditX.git /tmp/auditx
+          pip install -e /tmp/auditx
+          
+      - name: Run Scan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: auditx scan ./ --profile fintech --output compliance_report.html
+        
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: AuditX-Report
+          path: compliance_report.html
+```
+
+### Extending / Contributing
+1. Create a virtual environment (`python -m venv venv`) and activate it.
+2. Install dependencies: `pip install -r requirements.txt`.
+3. Add new profiles in `auditx/rules.py` or new compliance features to the `cli.py` pipeline.
+4. Run tests or generate sample scans locally before pushing changes.
 
 ---
 
@@ -82,6 +146,7 @@ AuditX supports specific regulatory configurations depending on your startup typ
 | :--- | :--- | :--- |
 | `--profile fintech` | Financial services, Payment gateways, Neobanks | DPDP + RBI + PCI-DSS + CERT-In |
 | `--profile saas` | Standard B2B/B2C SaaS platforms | DPDP + CERT-In |
+| `--profile healthcare` | HealthTech platforms handling PHI | HIPAA principles + DPDP |
 
 ---
 
@@ -89,18 +154,16 @@ AuditX supports specific regulatory configurations depending on your startup typ
 <img width="1200" height="899" alt="image" src="https://github.com/user-attachments/assets/0f216e44-7bb7-42e1-b38d-c605415407bb" />
 <img width="844" height="863" alt="image" src="https://github.com/user-attachments/assets/cd3f1a25-f0e9-4734-a9d5-c91d9dc77156" />
 
-
 ---
+
 ## ⚠️ Limitations
 
 - The prototype is currently optimized for **Python** and **JavaScript/TypeScript** backend codebases.
-- LLM reasoning may occasionally produce false positives. **Treat the generated report as a starting point for human engineering review, not as a legal compliance certificate.**
-- The free tier Gemini API has constraints: max 500 scans/day, and responses are rate-limited to 3 API calls per scan payload (with built-in 12-second safety delays).
+- LLM reasoning may occasionally produce false positives. **Treat the generated report as a starting point for human engineering review.**
+- Free tier Gemini API limit: max 500 scans/day. AuditX implements safety delays (rate limiting) to respect these quotas.
 
 ---
 
-## 🛣️ V2 Roadmap
-
-- [ ] **Automated VAPT analysis:** Integrate OWASP Top 10 taint analysis natively into the AST parsing logic.
-- [ ] **Delta Scanning:** Run autonomous scans on Git commit hooks via CI/CD pipelines.
-- [ ] **Expanded Profiles:** Add dedicated data compliance setups for `edtech` (handling minors' data) and `ecommerce`.
+## 🛣️ Roadmap (V3)
+- [ ] Auto-remediation script generation (providing patched files).
+- [ ] Enhanced dependency mapping using Software Bill of Materials (SBOM) generation.

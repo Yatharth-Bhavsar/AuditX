@@ -3,251 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuditX Compliance Report</title>
+    <title>AuditX Security Report</title>
     <style>
         :root {
+            --bg-color: #f8fafc;
+            --panel-bg: #ffffff;
+            --highlight-bg: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-teal: #0284c7;
+            
             --critical: #dc2626;
             --high: #ea580c;
             --medium: #ca8a04;
-            --low: #2563eb;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --low: #16a34a;
+            --score-green: #16a34a;
+            
             --border: #e2e8f0;
         }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg);
+            background-color: var(--bg-color);
             color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
             line-height: 1.5;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        header {
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.5rem;
-            letter-spacing: -0.025em;
-        }
-        .logo-text {
-            color: #4f46e5;
-        }
-        .metadata {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            background: var(--card-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
-        .meta-item {
-            font-size: 0.875rem;
-        }
-        .meta-label {
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            margin-bottom: 0.25rem;
-        }
-        .summary-bar {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        .badge.critical { background: var(--critical); }
-        .badge.high { background: var(--high); }
-        .badge.medium { background: var(--medium); }
-        .badge.low { background: var(--low); }
         
-        .effort-box {
-            background: #f1f5f9;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-weight: 600;
-            margin-left: auto;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Dashboard Top Section */
+        .dashboard-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .score-panel {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            align-items: center;
+            justify-content: space-around;
+            min-width: 400px;
             border: 1px solid var(--border);
         }
-
-        .finding-card {
-            background: var(--card-bg);
+        
+        .circular-score {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 6px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .circular-score.AUDIT { border-color: var(--score-green); color: var(--score-green); }
+        .circular-score.CONDITIONAL { border-color: var(--medium); color: var(--medium); }
+        .circular-score.HIGH { border-color: var(--high); color: var(--high); }
+        .circular-score.FAILURE { border-color: var(--critical); color: var(--critical); }
+        
+        .info-panel {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            flex-grow: 1;
             border: 1px solid var(--border);
-            border-radius: 8px;
+        }
+        
+        .top-risk-box {
+            background-color: rgba(255, 51, 51, 0.1);
+            border-left: 4px solid var(--critical);
             padding: 1.5rem;
+            border-radius: 4px;
             margin-bottom: 1.5rem;
-            page-break-inside: avoid;
-        }
-        .finding-header {
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
+        }
+        
+        .meta-bar {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
             margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+        }
+        
+        .badges-bar {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            background: transparent;
+        }
+        .badge.critical { color: var(--critical); border: 1px solid var(--critical); }
+        .badge.high { color: var(--high); border: 1px solid var(--high); }
+        .badge.medium { color: var(--medium); border: 1px solid var(--medium); }
+        .badge.low { color: var(--low); border: 1px solid var(--low); }
+
+        /* Card Rows */
+        .section-title {
+            color: var(--accent-teal);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
             padding-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .finding-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
+        
+        .row-item {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            display: grid;
+            grid-template-columns: 200px 150px 1fr 200px;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            align-items: center;
+            gap: 1rem;
         }
-        .location-hint {
-            font-family: monospace;
-            background: #f1f5f9;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
+        .row-item:hover {
+            background-color: var(--highlight-bg);
+        }
+        .row-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+        }
+        .text-critical { color: var(--critical); }
+        .text-high { color: var(--high); }
+        .text-medium { color: var(--medium); }
+        .text-low { color: var(--low); }
+        .text-pass { color: var(--score-green); }
+        
+        .evidence-box {
+            font-size: 0.85rem;
             color: var(--text-muted);
         }
-        .finding-body h4 {
-            margin: 1rem 0 0.5rem 0;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        
+        /* Grid Layouts for smaller items */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
-        .finding-body p {
-            margin: 0 0 1rem 0;
+        
+        .panel {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
         }
-        .legal-obligation {
-            background: #fff8f1;
-            border-left: 4px solid var(--high);
-            padding: 1rem;
-            margin: 1rem 0;
+        
+        .custom-policy details summary {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0.5rem 0;
+            outline: none;
+            color: var(--accent-teal);
         }
-        .remediation {
-            background: #f0fdf4;
-            border-left: 4px solid #16a34a;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
+        
         footer {
             margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-        .disclaimer {
-            font-style: italic;
-            max-width: 800px;
-            margin: 0 auto 1rem auto;
+            font-size: 0.85rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
         }
         
         @media print {
-            body { background: white; }
-            .container { padding: 0; }
-            .finding-card { page-break-inside: avoid; }
+            body { background-color: white; color: black; }
+            .score-panel, .info-panel, .row-item, .panel {
+            break-inside: avoid;
+            page-break-inside: avoid; background-color: white; border: 1px solid black; }
+            .tabs { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><span class="logo-text">AuditX</span> Compliance Report</h1>
-        </header>
 
-        <div class="metadata">
-            <div class="meta-item">
-                <div class="meta-label">Target Directory</div>
-                <div>{{ metadata.directory }}</div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Profile</div>
-                <div>{{ metadata.profile | upper }}</div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Files Analyzed</div>
-                <div>{{ metadata.files_count }} files</div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Scan Date</div>
-                <div>{{ metadata.timestamp }}</div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Duration</div>
-                <div>{{ metadata.duration }}s</div>
+<div class="container">
+    
+    <!-- SECTION A: Executive Dashboard -->
+    <!-- SECTION A: Executive Dashboard (VirusTotal Style) -->
+    <div style="display: flex; gap: 4rem; align-items: center; margin-bottom: 2rem; background: var(--panel-bg); padding: 3rem; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05);">
+        
+        <!-- VirusTotal Circle -->
+        <div style="position: relative; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 8px solid {{ score_data.color }}; flex-shrink: 0;">
+            <div style="text-align: center;">
+                <div style="font-size: 3.5rem; font-weight: bold; color: {{ score_data.color }}; line-height: 1;">{{ score_data.score }}</div>
+                <div style="font-size: 1rem; color: var(--text-muted); margin-top: 4px; font-weight: bold;">/ 100</div>
             </div>
         </div>
+        
+        <!-- VirusTotal Summary Text -->
+        <div>
+            <h2 style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 400; color: var(--text-main);">
+                {% if score_data.score >= 80 %}
+                    <span style="color: {{ score_data.color }}; font-weight: bold;">0 security vendors and no compliance gaps</span> flagged this codebase as malicious
+                {% else %}
+                    <span style="color: {{ score_data.color }}; font-weight: bold;">{{ summary.CRITICAL + summary.HIGH + summary.MEDIUM }} compliance gaps detected</span> in this codebase resulting in a <span style="font-weight: bold; text-transform: uppercase;">{{ score_data.label }}</span> assessment
+                {% endif %}
+            </h2>
+            <div style="color: var(--text-muted); font-size: 1.1rem; margin-top: 1rem;">
+                <strong>{{ metadata.profile | upper }} Target Profile</strong> &nbsp;|&nbsp; 
+                <span style="color: var(--critical); font-weight: bold;">{{ summary.CRITICAL }} CRITICAL</span> • 
+                <span style="color: var(--high); font-weight: bold;">{{ summary.HIGH }} HIGH</span> • 
+                <span style="color: var(--medium); font-weight: bold;">{{ summary.MEDIUM }} MEDIUM</span> • 
+                <span style="color: var(--low); font-weight: bold;">{{ summary.LOW }} LOW</span>
+            </div>
+            <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                Analyzed {{ metadata.files_count }} files in {{ metadata.directory }} on {{ metadata.timestamp }} ({{ metadata.duration }}s)
+            </div>
+        </div>
+    </div>
 
-        <div class="summary-bar">
-            <div class="badge critical">{{ summary.critical }} CRITICAL</div>
-            <div class="badge high">{{ summary.high }} HIGH</div>
-            <div class="badge medium">{{ summary.medium }} MEDIUM</div>
-            <div class="badge low">{{ summary.low }} LOW</div>
+    <!-- SECTION B: Finding Cards (VirusTotal Style Rows) -->
+    <div id="detection" style="margin-bottom: 3rem; margin-top: 2rem;">
+        <h2 class="section-title">🔍 Static & Taint Findings Analysis</h2>
+        
+        <div style="border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05); overflow: hidden; border: 1px solid var(--border);">
+            <div class="row-item" style="background: var(--highlight-bg); font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); border-bottom: none;">
+                <div>Security Rule (Vendor ID)</div>
+                <div>Detection</div>
+                <div>Behavior Observed</div>
+                <div>Evidence</div>
+            </div>
             
-            <div class="effort-box">
-                Estimated Remediation: {{ metadata.effort_days }}
-            </div>
-        </div>
-
-        <div class="findings-list">
-            {% if findings|length == 0 %}
-            <div class="finding-card">
-                <h3>No findings detected or Analysis Unavailable</h3>
-                <p>Ensure API key is valid and target codebase is correctly specified.</p>
-            </div>
+            {% if not findings %}
+                 <div class="row-item"><div style="grid-column: span 4; text-align: center;">No vulnerabilities found. System secure.</div></div>
             {% endif %}
-
+            
             {% for finding in findings %}
-            <div class="finding-card">
-                <div class="finding-header">
-                    <span class="badge {{ finding.severity | lower }}">{{ finding.severity }}</span>
-                    <h3 class="finding-title">{{ finding.regulation_reference }} — {{ finding.regulation_title }}</h3>
+            <div class="row-item">
+                <div style="font-family: monospace; color: var(--accent-teal);">{{ finding.rule_id }}<br><span style="color: var(--text-muted); font-size: 0.8rem;">{{ finding.regulation[0] if finding.regulation else 'AuditX Rules Engine' }}</span></div>
+                
+                <div class="row-indicator text-{{ finding.severity | lower }}">
+                    {% if finding.severity == 'CRITICAL' %} 🔴
+                    {% elif finding.severity == 'HIGH' %} 🟠
+                    {% elif finding.severity == 'MEDIUM' %} 🟡
+                    {% else %} 🟢 {% endif %}
+                    {{ finding.severity }}
                 </div>
                 
-                <div class="finding-body">
-                    <h4>Location Observed</h4>
-                    <span class="location-hint">{{ finding.location_hint }}</span>
-                    
-                    <h4>Behavior Observed</h4>
-                    <p>{{ finding.behavior_observed }}</p>
-                    
-                    {% if finding.legal_obligation %}
-                    <div class="legal-obligation">
-                        <strong>Legal Obligation:</strong><br>
-                        {{ finding.legal_obligation }}
-                    </div>
-                    {% endif %}
-                    
-                    <div class="remediation">
-                        <strong>Recommended Remediation:</strong><br>
-                        {{ finding.remediation }}
-                    </div>
+                <div>
+                    <div><strong>{{ finding.title }}</strong></div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">{{ finding.behavior_observed }}</div>
+                    <div style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 0.5rem;"><strong>BUSINESS CONSEQUENCE:</strong><br><span style="color: var(--text-muted); font-size: 0.9rem;">{{ finding.consequence }}</span></div>
+                </div>
+                
+                <div class="evidence-box">
+                    <strong>WHAT WAS FOUND:</strong><br>
+                    {{ finding.what_was_found }}<br><br>
+                    <strong>EVIDENCE CLASSIFICATION:</strong><br>
+                    <span title="{% if finding.evidence_type == 'DIRECT' %}AuditX found this pattern in the code structure.{% elif finding.evidence_type == 'INDIRECT' %}AuditX inferred this from absence of expected patterns.{% else %}AuditX searched for this control and found nothing.{% endif %}" style="text-decoration: underline dotted; cursor: help;">{{ finding.evidence_type }}</span>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        <footer>
-            <p class="disclaimer">
-                This report is generated by an AI system (AuditX {{ metadata.version }}) and
-                constitutes a preliminary compliance gap assessment only.
-                It does not replace a legal compliance audit or professional
-                VAPT engagement. All findings should be reviewed by a qualified
-                compliance officer before action.
-            </p>
-            <p>Generated on {{ metadata.timestamp }} by AuditX Scanner</p>
-        </footer>
     </div>
+    
+    <div class="grid-2">
+        <!-- SECTION C: Missing Controls -->
+        <div id="missing" class="panel">
+            <h2 class="section-title">🚨 Controls Not Found</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">AuditX searched for these mandatory controls but found no implementation evidence.</p>
+            
+            {% if not missing_controls %}
+                <div style="padding: 1rem; text-align: center; color: var(--score-green);">All critical controls implemented correctly.</div>
+            {% endif %}
+            
+            {% for mc in missing_controls %}
+            <div style="border-bottom: 1px solid var(--border); padding: 1rem 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <strong>{{ mc.control_id }} — {{ mc.control }}</strong>
+                    <span class="badge {{ mc.risk | lower }}">{{ mc.risk }} RISK</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">{{ mc.regulation }}</div>
+                <div style="font-size: 0.9rem; margin-bottom: 0.5rem;"><em>Why:</em> {{ mc.consequence }}</div>
+                <div style="font-family: monospace; font-size: 0.85rem; background: var(--bg-color); padding: 0.25rem;"><em>Sought:</em> {{ mc.evidence_sought }}</div>
+                <div style="margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 0.75rem; color: var(--text-main);"><strong>SUGGESTED ENGINEERING ACTION:</strong><br><span style="font-size: 0.9rem; color: var(--accent-teal);">{{ mc.ask_developer }}</span></div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- SECTION: OWASP & CVE -->
+        <div id="cve" class="panel">
+            <h2 class="section-title">🛡️ OWASP Top 10 & CVEs</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                {% for category, status in owasp_coverage.items() %}
+                    <div style="padding: 0.5rem; background: var(--bg-color); border-radius: 4px; display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span>{{ category }}</span>
+                        {% if status == 'PASS' %}
+                            <span class="text-pass">✔️ PASS</span>
+                        {% else %}
+                            <span class="text-critical">❌ FAIL</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <h2 class="section-title">🦠 Known Vulnerabilities (CVE Lookup)</h2>
+            {% if not cve_findings %}
+                <div style="padding: 1rem; text-align: center; color: var(--score-green);">Zero known vulnerabilities found in dependency graph.</div>
+            {% endif %}
+            
+            {% for cve in cve_findings %}
+            <div style="background: rgba(255, 51, 51, 0.1); border-left: 3px solid var(--critical); padding: 0.75rem; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                <strong>{{ cve.cve }}</strong> — {{ cve.title }}<br>
+                <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Location: {{ cve.location }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    {% if custom_policy_results %}
+    <div class="panel custom-policy" style="margin-bottom: 2rem;">
+        <h2 class="section-title">📄 Custom Policy Assessment</h2>
+        
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+             <div class="badge" style="border: 1px solid var(--text-muted);">{{ custom_policy_score.score }}/100 - {{ custom_policy_score.label }}</div>
+             <div class="badge" style="border: 1px solid var(--text-muted);">{{ custom_policy_score.passed }} Passed | {{ custom_policy_score.failed }} Failed | {{ custom_policy_score.unknown }} Unknown</div>
+        </div>
+        
+        {% for cr in custom_policy_results %}
+            <details style="background: var(--bg-color); padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">
+                <summary>
+                    {% if cr.status == 'PASS' %}<span class="text-pass">✅ PASS</span>
+                    {% elif cr.status == 'FAIL' %}<span class="text-critical">❌ FAIL</span>
+                    {% else %}<span class="text-medium">⚠️ UNKNOWN</span>{% endif %}
+                    — {{ cr.control_id }}: {{ cr.title }}
+                </summary>
+                <div style="padding-top: 0.5rem; font-size: 0.9rem;">
+                    <p>{{ cr.description }}</p>
+                    <p><strong>Evidence ({{ cr.evidence_type }}):</strong> <span style="font-family: monospace;">{{ cr.evidence_detail }}</span></p>
+                </div>
+            </details>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- SECTION D: Remediation Roadmap Cards -->
+    <div id="roadmap" class="panel" style="margin-bottom: 2rem;">
+        <h2 class="section-title">🛤️ Remediation Roadmap</h2>
+        
+        {% for sev in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'] %}
+            {% for finding in findings %}
+                {% if finding.severity == sev %}
+                <div style="border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; break-inside: avoid; page-break-inside: avoid;">
+                    <div style="background: var(--highlight-bg); padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="badge {{ sev | lower }}">{{ sev }}</span>
+                            <strong>{{ finding.title }}</strong>
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 1.5rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-muted);">THE ACTION</h4>
+                        <p style="margin: 0 0 1.5rem 0; font-size: 0.95rem;">{{ finding.action }}</p>
+                        
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-muted); border-top: 1px dashed var(--border); padding-top: 1.5rem;">THE TICKET</h4>
+                        <div style="background: var(--bg-color); padding: 1rem; border-radius: 4px; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            <strong>Task title:</strong> {{ finding.ticket.title }}<br><br>
+                            <strong>Acceptance criteria:</strong>
+                            <ul style="margin-top: 0.5rem; padding-left: 1.5rem; list-style-type: none;">
+                                {% for task in finding.ticket.tasks %}
+                                <li>☐ {{ task }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-muted); border-top: 1px dashed var(--border); padding-top: 1.5rem;">VERIFICATION</h4>
+                        <p style="margin: 0; font-size: 0.9rem;">{{ finding.verification }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    
+    <!-- CHECKLIST SECTION -->
+    <div class="panel" style="margin-bottom: 2rem; position: relative; break-inside: avoid; page-break-inside: avoid;">
+        <button class="btn-print" onclick="window.print()" style="position: absolute; right: 1.5rem; top: 1.5rem; padding: 0.5rem 1rem; text-transform: uppercase; font-weight: bold; background: var(--accent-teal); color: white; border: none; border-radius: 4px; cursor: pointer;">🖨️ Print Checklist</button>
+        <h2 class="section-title">📋 Audit Readiness Checklist</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Print this page and use it to prepare for your next compliance review. Check each item with your engineering team before the audit date.</p>
+        
+        <table class="checklist-table">
+            <tr><th style="width: 15%;">Status</th><th style="width: 35%;">Control</th><th style="width: 50%;">How to verify</th></tr>
+            
+            {% for finding in findings %}
+            <tr><td class="text-critical">❌ Not Done</td><td>{{ finding.title }}</td><td>{{ finding.verification }}</td></tr>
+            {% endfor %}
+            {% for mc in missing_controls %}
+            <tr><td class="text-critical">❌ Not Done</td><td>{{ mc.control }}</td><td>Run AuditX after implementation to verify AST detection.</td></tr>
+            {% endfor %}
+            
+            {% for pass in passing_items %}
+            <tr><td class="text-pass">✅ Detected</td><td>{{ pass.title }}</td><td>{{ pass.verification }}</td></tr>
+            {% endfor %}
+            
+            <tr><td class="text-medium">⚠️ Manual Check Required</td><td>Data Processing Agreement with vendors</td><td>Request signed DPAs from all third-party processors.</td></tr>
+            <tr><td class="text-medium">⚠️ Manual Check Required</td><td>Privacy Notice published to users</td><td>Verify a privacy policy URL exists on your app's registration page.</td></tr>
+            <tr><td class="text-medium">⚠️ Manual Check Required</td><td>Incident Response Plan documented</td><td>Ask your CTO for the written incident response procedure.</td></tr>
+            <tr><td class="text-medium">⚠️ Manual Check Required</td><td>Employee data handling training</td><td>Check if all engineers have completed DPDP awareness training.</td></tr>
+        </table>
+    </div>
+    
+    <!-- REGULATORY CONTEXT SECTION -->
+    <div id="regulations" class="panel" style="margin-bottom: 2rem; break-inside: avoid; page-break-inside: avoid;">
+        <h2 class="section-title">⚖️ Regulatory Reference</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            {% for reg in cited_regulations %}
+            <div style="border: 1px solid var(--border); border-radius: 8px; padding: 1rem; background: var(--highlight-bg);">
+                <h4 style="margin: 0 0 0.5rem 0; color: var(--accent-teal);">{{ reg.name }}</h4>
+                <div style="font-size: 0.85rem; line-height: 1.6;">
+                    <strong>Enforced by:</strong> {{ reg.enforcer }}<br>
+                    <strong>Key requirement:</strong> {{ reg.requirement }}<br>
+                    <strong>Maximum penalty:</strong> <span class="text-critical">{{ reg.penalty }}</span><br>
+                    <div style="margin-top: 0.75rem;"><a href="{{ reg.url }}" target="_blank" style="color: var(--accent-teal); text-decoration: none; font-weight: bold;">Read Official Docs ↗</a></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>
+        <p>⚠ This is a preliminary compliance gap assessment. It does not replace a professional VAPT or legal audit.</p>
+        <p>Generated by AuditX on {{ metadata.timestamp }}</p>
+    </footer>
+
+</div>
+
 </body>
 </html>

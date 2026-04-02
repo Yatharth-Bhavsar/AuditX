@@ -13,22 +13,19 @@ def checkout():
     amount = data.get('amount')
     cvv = data.get('cvv')
 
-    # Gap 5 — PCI-REQ3 CVV Retention:
-    # cvv field is present in the payment request handler and 
-    # logged to app.log for "debugging purposes."
-    logger.debug(f"Processing payment for user {user_id} with CVV {cvv}")
+    # Secured logging: No longer storing CVV
+    logger.debug(f"Processing payment for user {user_id}")
 
     # Process payment (mock)
     payment_success = True
 
     if payment_success:
         conn = get_db()
-        # Gap 4 — RBI Tokenization + PCI-REQ3:
-        # checkout route stores card_number as VARCHAR in the 
-        # transactions table after payment processing.
+        # Secured: Using dummy token instead of raw card
+        payment_token = f"tok_{user_id}_{amount}"
         conn.execute(
-            "INSERT INTO transactions (user_id, card_number, amount) VALUES (?,?,?)",
-            (user_id, card_number, amount)
+            "INSERT INTO transactions (user_id, payment_token, amount) VALUES (?,?,?)",
+            (user_id, payment_token, amount)
         )
         conn.commit()
         conn.close()

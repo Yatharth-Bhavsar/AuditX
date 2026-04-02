@@ -1,7 +1,16 @@
 README.md
 setup.py
 auditx/__init__.py
+auditx/__main__.py
 auditx/cli.py
+auditx/missing_controls.py
+auditx/owasp.py
+auditx/policy_matcher.py
+auditx/policy_reader.py
+auditx/rules.py
+auditx/scoring.py
+auditx/taint.py
+auditx/vuln_db.py
 auditx.egg-info/PKG-INFO
 auditx.egg-info/SOURCES.txt
 auditx.egg-info/dependency_links.txt
