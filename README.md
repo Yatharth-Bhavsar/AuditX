@@ -150,6 +150,15 @@ AuditX supports specific regulatory configurations depending on your startup typ
 ---
 
 ## ⚠️ Demo Screenshots
+<img width="1686" height="938" alt="image" src="https://github.com/user-attachments/assets/714d44a7-b3af-49d3-b83a-50c63e077b19" />
+
+<img width="1601" height="931" alt="image" src="https://github.com/user-attachments/assets/a5fe37f9-1bdf-43cf-a1ab-2dd2a9847b0d" />
+
+<img width="1652" height="932" alt="image" src="https://github.com/user-attachments/assets/75712958-4d28-4c6f-ab8d-e0000fd1fc16" />
+
+<img width="1625" height="893" alt="image" src="https://github.com/user-attachments/assets/5a960dee-9ea2-40de-ae64-9e5c3a30eae2" />
+
+<img width="1690" height="701" alt="image" src="https://github.com/user-attachments/assets/301901c1-bbb3-41fb-9c5d-63c15c8858a9" />
 
 *enhanced report and scoring system to analyse your organisation's overall audit score based on certain parameters.*
 
