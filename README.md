@@ -3,7 +3,6 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Gemini API](https://img.shields.io/badge/Gemini-2.5_Flash-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen.svg)
 
 **AuditX** is a powerful, local-first Python CLI tool that analyzes a startup's backend codebase to identify compliance gaps. It maps vulnerabilities directly to crucial Indian regulatory frameworks, generating action-oriented, standalone HTML reports.
